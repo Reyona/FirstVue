@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="vue.js"></script>
+    <title>My Vue</title>
+</head>
+<body>
+<div id="app1">
+    {{ a }}
+</div>
+<hr>
+<div id="app2">
+    <p>{{ foo }}</p> <!-- 这里的 `obj.foo` 不会更新！ -->
+    <button @click="app2.foo = 'baz'">Change it</button>
+</div>
+<hr>
+<div id="app3">
+    <p>{{ foo }}</p> <!-- 与上一个foo不会冲突 scope不同！ -->
+    <button v-on:click="popMessage">Change it</button>
+</div>
+</body>
+
+<script>
+
+    var origData = {a: 1}; // 我们的数据对象
+    var app1 = new Vue({
+        el: '#app1',
+        data: function () { // 可以是一个function，返回一个对象用于渲染页面
+            return origData; // 该对象被加入到一个Vue实例中
+        }
+    });
+    // 它们引用相同的对象！：
+    console.log('app1.a === origData.a : ', app1.a === origData.a); // => true
+    console.log('app1.$data.a === origData.a : ', app1.$data.a === origData.a);  // => true
+    // 所以设置属性也会影响到原始数据：
+    app1.a = 2;
+    origData.a; // => 2
+    // ……反之亦然：
+    origData.a = 3;
+    app1.a; // => 3
+
+    var obj = {
+        foo: 'bar'
+    };
+    Object.freeze(obj);
+    var app2 = new Vue({
+        el: '#app2',
+        data() {
+            return obj
+
+        }
+    });
+
+    var app3 = new Vue({
+        el: '#app3',
+        data: {
+            foo: '整个牛项目!'
+        },
+        methods: {
+            popMessage: function () {
+                alert(this.foo);
+            }
+        }
+    });
+
+</script>
+</html>
