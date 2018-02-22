@@ -11,13 +11,14 @@
 </div>
 <hr>
 <div id="app2">
-    <p>{{ foo }}</p> <!-- 这里的 `obj.foo` 不会更新！ -->
-    <button @click="app2.foo = 'baz'">Change it</button>
+    <p>{{ foo }}</p>
+    <button @click="app2.foo = 'baz'">Change it</button> 这里的'obj.foo'不会更新！
 </div>
 <hr>
 <div id="app3">
     <p>{{ foo }}</p> <!-- 与上一个foo不会冲突 scope不同！ -->
-    <button v-on:click="popMessage">Change it</button>
+    <button v-on:click="popMessage">v-on:click="popMessage" Change it</button>
+    <button @click="popMessage">@click="popMessage" Change it</button>
 </div>
 <hr>
 <div id="app4">

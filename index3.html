@@ -6,6 +6,74 @@
     <title>My Vue</title>
 </head>
 <body>
-
+<div id="app1">
+    <p>这个会被改变: {{ msg }} <span>{{ text }}</span> </p>
+    <p v-once>这个将不会改变: {{ msg }} <span>{{ text }}</span> </p>
+</div>
+<hr>
+<div id="app2">
+    <p>Using mustaches: {{ rawHtml }}</p>
+    <p>Using v-html directive: <span v-html="rawHtml"></span></p>
+    <p>请只对可信内容使用 HTML 插值，<b>绝不要</b>对用户提供的内容使用插值!</p>
+</div>
+<hr>
+<div id="app3">
+    <div v-bind:id="dynamicId">dynamicId</div>
+    <div :id="dynamicId">dynamicId 可以省略v-bind</div>
+    <button v-bind:disabled="isButtonDisabled">Button</button>
+</div>
+<hr>
+<div id="app4">
+    {{ number + 1 }}
+    {{ ok ? 'YES' : 'NO' }}
+    {{ message.split('').reverse().join('') }}
+    <p v-for="(item, index) in groceryList"
+         :id="'grocery-' + index">{{ index }} {{ item.text }}</p>
+</div>
 </body>
+
+<script>
+    var app1 = new Vue({
+        el: '#app1',
+        data: {
+            msg: ' msg ',
+            text: ' text '
+        }
+    });
+    app1.msg = ' hello ';
+    app1.text = ' world ';
+
+    var app2 = new Vue({
+        el: '#app2',
+        data: {
+            rawHtml: '<span style="color: red">这行字是红色的</span>' //请只对可信内容使用 HTML 插值，绝不要对用户提供的内容使用插值!
+        }
+    });
+
+    var app3 = new Vue({
+        el: '#app3',
+        data: {
+            dynamicId: 'ID',
+            isButtonDisabled : false
+        }
+    });
+    console.log('document.getElementById(\'ID\') : ', document.getElementById('ID'));
+    app3.isButtonDisabled = true; // 按钮就点不了了
+
+    var app4 = new Vue({
+        el: '#app4',
+        data: {
+            number: 2018,
+            ok : false,
+            message : '整个牛项目!',
+            groceryList : [
+                { text: '蔬菜' },
+                { text: '奶酪' },
+                { text: '烤鸡' },
+                { text: '随便吃点' }
+            ]
+        }
+    });
+</script>
+
 </html>
