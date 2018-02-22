@@ -19,6 +19,15 @@
     <p>{{ foo }}</p> <!-- 与上一个foo不会冲突 scope不同！ -->
     <button v-on:click="popMessage">Change it</button>
 </div>
+<hr>
+<div id="app4">
+    {{ a }}
+</div>
+<hr>
+<div id="app5">
+    {{ a }}
+</div>
+
 </body>
 
 <script>
@@ -32,7 +41,7 @@
     });
     // 它们引用相同的对象！：
     console.log('app1.a === origData.a : ', app1.a === origData.a); // => true
-    console.log('app1.$data.a === origData.a : ', app1.$data.a === origData.a);  // => true
+    console.log('app1.$data4.a === origData.a : ', app1.$data.a === origData.a);  // => true
     // 所以设置属性也会影响到原始数据：
     app1.a = 2;
     origData.a; // => 2
@@ -61,6 +70,31 @@
             popMessage: function () {
                 alert(this.foo);
             }
+        }
+    });
+
+    var data4 = { a: 1 };
+    var app4 = new Vue({
+        el: '#app4',
+        data: data4
+    });
+    // Vue实例还暴露了一些有用的实例属性与方法 它们都有前缀$ :
+    console.log('app4.$data === data4 : ', app4.$data === data4); // => true
+    console.log('app4.$el === document.getElementById(\'app4\') : ', app4.$el === document.getElementById('app4')); // => true
+    // $watch 是一个实例方法 :
+    app4.$watch('a', function (newValue, oldValue) {
+        alert('old : ' + oldValue + ' new : ' + newValue);
+        // 这个回调将在 `app4.a` 改变后调用
+    });
+
+    var app5 = new Vue({ // created钩子可以用来在一个实例被创建之后执行代码
+        el: '#app5',
+        data: {
+            a: 1
+        },
+        // 不要在钩子上使用箭头函数! :
+        created: function () { // `this` 指向 vm 实例
+            console.log('a is: ' + this.a); // => "a is: 1"
         }
     });
 
