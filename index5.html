@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+    <script src="vue.js"></script>
+    <title>My Vue</title>
+    <style>
+        .static {
+            font-style: italic;
+        }
+
+        .active {
+            font-weight: bolder
+        }
+
+        .text-danger {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<div id="sample1">
+    <div class="static"
+         v-bind:class="classObject">
+        class绑定-对象语法
+    </div>
+    <p>
+        渲染前：&lt;div class="static" v-bind:class="classObject"&gt;&lt;/div&gt; <br>
+        初始渲染结果应为：&lt;div class="static active text-danger"&gt;&lt;/div&gt;
+    </p>
+</div>
+<hr>
+<div id="sample2">
+    <div class="static"
+         v-bind:class="[activeClass, errorClass]">
+        class绑定-数组语法
+    </div>
+    <p>
+        渲染前：&lt;div class="static" v-bind:class="[activeClass, errorClass]"&gt;&lt;/div&gt; <br>
+        初始渲染结果应为：&lt;div class="static active text-danger"&gt;&lt;/div&gt;
+    </p>
+</div>
+<hr>
+<div id="sample3">
+    <my-component v-bind:class="{active: isActive, 'text-danger': hasError && hasError.type === 'fatal'}"></my-component>
+    <p>
+        渲染前：&lt;my-component v-bind:class="{active: isActive, 'text-danger': hasError && hasError.type === 'fatal'}"&gt;&lt;/my-component&gt; <br>
+        初始渲染结果为(样式名字有横线必须加引号)：&lt;div class="static active text-danger"&gt;&lt;/div&gt;
+    </p>
+</div>
+</body>
+
+<script>
+    // 对象语法
+    var sample1 = new Vue({
+        el: '#sample1',
+        data: {
+            isActive: true, // sample1.isActive=false
+            hasError: {
+                type: 'fatal'
+            } // sample1.hasError=undefined
+        },
+        computed: {
+            classObject: function () {
+                return {
+                    'active': this.isActive,
+                    'text-danger': this.hasError && this.hasError.type === 'fatal'
+                }
+            }
+        }
+    });
+
+    // 数组语法
+    var sample2 = new Vue({
+        el: '#sample2',
+        data: {
+            activeClass: 'active',
+            errorClass: 'text-danger'
+        },
+    });
+
+    // 用在组件上
+    Vue.component('my-component', {
+        template: '<div class="static">class绑定-用在组件上</div>'
+    });
+    var sample3 = new Vue({
+        el: '#sample3',
+        data: {
+            isActive: true, // sample1.isActive=false
+            hasError: {
+                type: 'fatal'
+            } // sample1.hasError=undefined
+        }
+    })
+</script>
+</html>

@@ -75,7 +75,7 @@
             lastName: 'Bar'
         },
         computed: {
-            fullName: function () {
+            fullName: function () { //监听相关变量，发生变化时运行，修改fullName变量
                 return this.firstName + ' ' + this.lastName
             }
         }
@@ -90,7 +90,7 @@
             learn: 'hello world'
         },
         watch: {
-            learn: function (newValue) {
+            learn: function (newValue) { //监听learn变量，发生变化时运行，修改多个相关变量
                 var names = newValue.split(' ')
                 this.first = names[0]
                 this.last = names[names.length - 1]

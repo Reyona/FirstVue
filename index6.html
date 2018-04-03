@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+    <script src="vue.js"></script>
+    <title>My Vue</title>
+</head>
+<body>
+<div id="sample1">
+    <div v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }">style绑定-对象语法</div>
+    <p>
+        渲染前：&lt;div v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }"&gt;&lt;/div&gt; <br>
+        初始渲染结果应为：&lt;div style="color: red; font-size: 30px;"&gt;&lt;/div&gt;
+    </p>
+    <div v-bind:style="styleObject">style绑定-对象语法</div>
+    <p>
+        渲染前：&lt;div v-bind:style="styleObject"&gt;&lt;/div&gt; <br>
+        初始渲染结果应为：&lt;div style="color: red; font-size: 13px;"&gt;&lt;/div&gt;
+    </p>
+</div>
+<hr>
+<div id="sample2">
+    <div v-bind:style="[baseStyles, overridingStyles]">style绑定-数组语法</div>
+    <p>
+        渲染前：&lt;div v-bind:style="[baseStyles, overridingStyles]"&gt;&lt;/div&gt; <br>
+        初始渲染结果应为：&lt;div style="color: red; font-size: 30px; font-weight: bolder;"&gt;&lt;/div&gt;
+    </p>
+</div>
+<hr>
+<div id="sample3">
+    <my-component v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }"></my-component>
+    <p>
+        渲染前：&lt;my-component v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }"&gt;&lt;/my-component&gt; <br>
+        初始渲染结果为(有横线必须加引号)：&lt;div class="static" style="color: red; font-size: 30px;"&gt;&lt;/div&gt;
+    </p>
+</div>
+
+</body>
+
+<script>
+    // 对象语法
+    var sample1 = new Vue({
+        el: "#sample1",
+        data: {
+            activeColor: 'red',
+            fontSize: 30,
+            styleObject: {
+                color: 'red',
+                fontSize: '13px'
+            }
+        }
+    });
+
+    // 数组语法
+    var sample2 = new Vue({
+        el: "#sample2",
+        data: {
+            baseStyles: {
+                color: 'red',
+                fontSize: '13px'
+            },
+            overridingStyles: {
+                fontWeight: 'bolder',
+                'font-size': '30px' //后面的fontSize覆盖了前面的
+            },
+        }
+    });
+
+    // 用在组件上
+    Vue.component('my-component', {
+        template: '<div class="static">style绑定-用在组件上</div>'
+    });
+    var sample3 = new Vue({
+        el: '#sample3',
+        data: {
+            activeColor: 'red',
+            fontSize: 30
+        }
+    })
+</script>
+</html>
