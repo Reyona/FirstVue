@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <script src="vue.js"></script>
+    <title>My Vue</title>
+</head>
+<body>
+<div id="sample1">
+    <p>在v-for块中，我们拥有对父作用域属性的完全访问权限。</p>
+    <ul>
+        <li v-for="(item, index) in items">
+            {{ parentMessage }} - {{ index }} - {{ item.message }}
+        </li>
+    </ul>
+</div>
+<hr>
+<div id="sample2">
+    <h1>index, key, value</h1>
+    <div v-for="(value, key, index) in object">
+        {{ index }}. {{ key }}: {{ value }}
+    </div>
+    <p>注：在遍历对象时，是按Object.keys()的结果遍历，但是不能保证它的结果在不同的JavaScript引擎下是一致的。</p>
+</div>
+<hr>
+<div id="sample3">
+    <h1>触发视图更新的方法</h1>
+    <div>Vue 包含一组观察数组的变异方法，所以它们也将会触发视图更新。这些方法如下：
+    <ul>
+        <li>push()</li>
+        <li>pop()</li>
+        <li>shift()</li>
+        <li>unshift()</li>
+        <li>splice()</li>
+        <li>sort()</li>
+        <li>reverse()</li>
+    </ul>
+    你打开控制台，然后用前面例子的 items 数组调用变异方法：example1.items.push({ message: 'Baz' }) 。</div>
+    <ul>
+        <li v-for="(item, index) in items">
+            {{ parentMessage }} - {{ index }} - {{ item.message }}
+        </li>
+    </ul>
+    <button v-on:click="push">push()</button>
+    <button v-on:click="reverse">reverse()</button>
+</div>
+<hr>
+<div id="sample4">
+    <h1>不能直接更新视图的方法</h1>
+    <p>有filter(), concat() 和 slice()。想要能够更新视图就让它们返回的结果覆盖原来的数组即可：</p>
+    <code>sample4.items = sample4.items.filter(function (item) { <br>
+        return item.message.match(/Foo/)<br>
+        })</code>
+    <ul>
+        <li v-for="(item, index) in items">
+            {{ index }} - {{ item.message }}
+        </li>
+    </ul>
+    <button v-on:click="filter">filter()</button>
+    <p>
+        由于 JavaScript 的限制，Vue 不能检测以下变动的数组：<br>
+        1. 当你利用索引直接设置一个项时，例如：vm.items[indexOfItem] = newValue <br>
+        2. 当你修改数组的长度时，例如：vm.items.length = newLength <br>
+        以下正解： <br>
+        更新整个对象并同步更新视图：Vue.set(sample4.items, 0, {message:"11121332"}) <br>
+        改变数组长度并同步更新视图：sample4.items.splice(8)
+    </p>
+</div>
+<hr>
+<div id="sample5">
+    <p>
+
+    </p>
+</div>
+
+</body>
+
+<script>
+    var sample1 = new Vue({
+        el: "#sample1",
+        data: {
+            parentMessage: 'Fruits',
+            items: [
+                {message: 'Apple'},
+                {message: 'Pear'}
+            ]
+        }
+    });
+
+    var sample2 = new Vue({
+        el: "#sample2",
+        data: {
+            object: {
+                firstName: 'John',
+                lastName: 'Doe',
+                age: 30
+            }
+        }
+    });
+
+    // 变异方法
+    var sample3 = new Vue({
+        el: '#sample3',
+        data: {
+            parentMessage: 'Fruits',
+            items: [
+                {message: 'Apple'},
+                {message: 'Pear'}
+            ]
+        },
+        methods: {
+            push: function () {
+                this.items.push({
+                    message: Math.random()
+                })
+            },
+            reverse: function(){
+                this.items = this.items.reverse()
+            }
+        }
+    });
+
+    // 非变异方法
+    var sample4 = new Vue({
+        el: "#sample4",
+        data: {
+            items: [
+                {message: 'Apple'},
+                {message: 'Banana'},
+                {message: 'Cat'},
+                {message: 'Dog'},
+                {message: 'Egg'},
+                {message: 'Friend'},
+                {message: 'Grape'},
+                {message: 'Apple'},
+                {message: 'Banana'},
+                {message: 'Cat'},
+                {message: 'Dog'},
+                {message: 'Egg'},
+                {message: 'Friend'},
+                {message: 'Grape'}
+            ]
+        },
+        methods: {
+            filter:function(){
+                this.items = this.items.filter(function (item) {
+                    return item.message.match(/Apple/)
+                })
+            }
+        }
+    });
+
+    //
+    var sample5 = new Vue({
+        el: "#sample5",
+        data: {
+        }
+    })
+</script>
+</html>
