@@ -26,16 +26,17 @@
 <div id="sample3">
     <h1>触发视图更新的方法</h1>
     <div>Vue 包含一组观察数组的变异方法，所以它们也将会触发视图更新。这些方法如下：
-    <ul>
-        <li>push()</li>
-        <li>pop()</li>
-        <li>shift()</li>
-        <li>unshift()</li>
-        <li>splice()</li>
-        <li>sort()</li>
-        <li>reverse()</li>
-    </ul>
-    你打开控制台，然后用前面例子的 items 数组调用变异方法：example1.items.push({ message: 'Baz' }) 。</div>
+        <ul>
+            <li>push()</li>
+            <li>pop()</li>
+            <li>shift()</li>
+            <li>unshift()</li>
+            <li>splice()</li>
+            <li>sort()</li>
+            <li>reverse()</li>
+        </ul>
+        你打开控制台，然后用前面例子的 items 数组调用变异方法：example1.items.push({ message: 'Baz' }) 。
+    </div>
     <ul>
         <li v-for="(item, index) in items">
             {{ parentMessage }} - {{ index }} - {{ item.message }}
@@ -49,7 +50,7 @@
     <h1>不能直接更新视图的方法</h1>
     <p>有filter(), concat() 和 slice()。想要能够更新视图就让它们返回的结果覆盖原来的数组即可：</p>
     <code>sample4.items = sample4.items.filter(function (item) { <br>
-        return item.message.match(/Foo/)<br>
+        return item.message.match(/Apple/)<br>
         })</code>
     <ul>
         <li v-for="(item, index) in items">
@@ -68,9 +69,73 @@
 </div>
 <hr>
 <div id="sample5">
+    <h1>对象更改检测注意事项</h1>
+    <div v-for="(value, key, index) in object">
+        {{ index }}. {{ key }}: {{ value }}
+    </div>
+    <button v-on:click="assign">assign()</button>
+    <button v-on:click="wrongAssign">wrongAssign()</button>
     <p>
-
+        有时你可能需要为已有对象赋予多个新属性。在这种情况下，你应该用两个对象的属性创建一个新的对象。所以，如果你想添加新的响应式属性，不要像这样：
     </p>
+    <code>
+        this.object = Object.assign(this.object, { <br>
+        area: 'village', <br>
+        favoriteColor: 'Blue' <br>
+        })
+    </code>
+    <p>也不要像这样：</p>
+    <code>
+        this.object.area = 'village'; <br>
+        this.object.favoriteColor = 'Blue';
+    </code>
+    <p>
+        你应该这样做：
+    </p>
+    <code>
+        this.object = Object.assign({}, this.object, { <br>
+        area: 'village', <br>
+        favoriteColor: 'Blue' <br>
+        })
+    </code>
+</div>
+<hr>
+<div id="sample6">
+    <h1>显示过滤/排序结果</h1>
+    <p>有时，我们想要显示一个数组的过滤或排序副本，而不实际改变或重置原始数据。在这种情况下，可以创建返回过滤或排序数组的计算属性。例如：<br>
+        &lt;li v-for="n in evenNumbers"&gt;{&shy;{ n }&shy;}&lt;/li&gt;
+    </p>
+    <ul>
+        <li v-for="n in evenNumbers">{{ n }}</li>
+    </ul>
+    <p>
+        在计算属性不适用的情况下(例如，在嵌套v-for循环中)你可以使用一个method方法：<br>
+        &lt;li v-for="n in even(numbers)"&gt;{&shy;{ n }&shy;}&lt;/li&gt;
+    </p>
+    <ul>
+        <li v-for="n in even(numbers)">{{ n }}</li>
+    </ul>
+</div>
+<hr>
+<div id="sample7">
+    <h1>v-for on a &lt;template&gt;</h1>
+    <p>利用带有v-for的&lt;template&gt;渲染多个元素。</p>
+    <ul>
+        <template v-for="item in items">
+            <li>{{ item.message }}</li>
+            <li class="divider"></li>
+        </template>
+    </ul>
+</div>
+<hr>
+<div id="sample8">
+    <h1>v-for with v-if</h1>
+    <p>当它们处于同一节点，v-for的优先级比v-if更高，这意味着v-if将分别重复运行于每个v-for循环中。</p>
+    <ul>
+        <li v-for="todo in todos" v-if="!todo.isComplete">
+            {{ todo.msg }}
+        </li>
+    </ul>
 </div>
 
 </body>
@@ -114,7 +179,7 @@
                     message: Math.random()
                 })
             },
-            reverse: function(){
+            reverse: function () {
                 this.items = this.items.reverse()
             }
         }
@@ -142,7 +207,7 @@
             ]
         },
         methods: {
-            filter:function(){
+            filter: function () {
                 this.items = this.items.filter(function (item) {
                     return item.message.match(/Apple/)
                 })
@@ -150,11 +215,91 @@
         }
     });
 
-    //
+    //对象更改检测注意事项
     var sample5 = new Vue({
         el: "#sample5",
         data: {
+            object: {
+                firstName: 'John',
+                lastName: 'Doe',
+                age: 30
+            }
+        },
+        methods: {
+            assign: function () { // 这种方式才能同步刷新视图
+                this.object = Object.assign({}, this.object, {
+                    area: 'village',
+                    favoriteColor: 'Blue'
+                })
+            },
+            wrongAssign: function () { // 这种方式不能同步刷新视图
+                this.object.area = 'village';
+                this.object.favoriteColor = 'Blue';
+            }
         }
-    })
+    });
+
+    // 显示过滤/排序结果
+    var sample6 = new Vue({
+        el: "#sample6",
+        data: {
+            numbers: [1, 2, 3, 4, 5, 6]
+        },
+        computed: {
+            evenNumbers: function () {
+                return this.numbers.filter(function (number) {
+                    return number % 2 === 0
+                })
+            }
+        },
+        methods: {
+            even: function (numbers) {
+                return numbers.filter(function (number) {
+                    return number % 2 === 0
+                })
+
+            }
+        }
+    });
+
+    //
+    var sample7 = new Vue({
+        el: "#sample7",
+        data: {
+            items: [
+                {message: 'Apple'},
+                {message: 'Banana'},
+                {message: 'Cat'},
+                {message: 'Dog'},
+                {message: 'Egg'},
+                {message: 'Friend'},
+                {message: 'Grape'}
+            ]
+        }
+    });
+
+    var sample8 = new Vue({
+        el: "#sample8",
+        data: {
+            todos: [
+                {
+                    msg:"aaa",
+                    isComplete:false
+                },
+                {
+                    msg:"bbb",
+                    isComplete:true
+                },
+                {
+                    msg:"ccc",
+                    isComplete:false
+                },
+                {
+                    msg:"ddd",
+                    isComplete:true
+                },
+            ]
+        }
+    });
 </script>
 </html>
