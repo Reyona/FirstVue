@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <script src="vue.js"></script>
+    <title>My Vue</title>
+</head>
+<body>
+<div id="sample1">
+    <h1>监听事件</h1>
+    <button v-on:click="counter++;alert(counter);">counter++</button>
+    <p>The button above has been clicked {{ counter }} times.</p>
+</div>
+<hr>
+<div id="sample2">
+    <h1>事件处理方法</h1>
+    <p>v-on还可以接收一个需要调用的方法名称。</p>
+    <!-- greet是在下面定义的方法名 -->
+    <button v-on:click="greet">Greet</button>
+</div>
+<hr>
+<div id="sample3">
+    <h1>内联处理器中的方法</h1>
+    <p>
+        除了直接绑定到一个方法，也可以在内联 JavaScript 语句中调用方法：<br>
+        这里就不能直接拿到原生的DOM事件了，要用特殊变量$event把它传进来
+    </p>
+    <button v-on:click="say('hi')">Say hi</button>
+    <button v-on:click="say('what', $event)">Say what</button>
+</div>
+
+</body>
+
+<script>
+    // 监听事件
+    var sample1 = new Vue({
+        el: "#sample1",
+        data: {
+            counter: 0
+        }
+    });
+
+    // 事件处理方法
+    var sample2 = new Vue({
+        el: "#sample2",
+        data: {
+            name: 'Vue.js'
+        },
+        // 在methods对象中定义方法
+        methods: {
+            greet: function (event) {
+                alert('Hello ' + this.name + '!')
+                // event是原生DOM事件
+                if (event) {
+                    console.log(event)
+                }
+            }
+        }
+    });
+
+    // 内联处理器中的方法
+    var sample3 = new Vue({
+        el: "#sample3",
+        data: {},
+        // 在methods对象中定义方法
+        methods: {
+            say: function (value, event) {
+                alert(value)
+                // 这里就不能直接拿到原生的DOM事件了，要用特殊变量$event把它传进来
+                if (event) {
+                    console.log(event)
+                }
+            }
+        }
+    });
+
+</script>
+</html>
