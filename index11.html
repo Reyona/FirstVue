@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <script src="vue.js"></script>
+    <title>My Vue</title>
+</head>
+<body>
+<div id="sample1">
+    <h1>全局注册</h1>
+    <sample-1>这段可以被编译</sample-1>
+    <sample-2>这段不能被编译，并且会在console报错</sample-2>
+</div>
+<hr>
+<div id="sample2">
+    <h1>局部注册</h1>
+    <sample-1>这段可以被编译</sample-1>
+    <sample-2>这段可以被编译</sample-2>
+</div>
+<hr>
+<div id="sample3">
+    <h1>组件的data必须是函数</h1>
+    <sample-3></sample-3>
+    <sample-3></sample-3>
+    <sample-3></sample-3>
+</div>
+<hr>
+<div id="sample4">
+    <h1>使用Prop传递数据、子组件点击事件、从父组件访问子组件的数据</h1>
+    <sample-4-child my-message="hello!"></sample-4-child> <!--用字面量直接把值绑上去-->
+    <button v-on:click="pop">pop from parent</button>
+</div>
+<hr>
+<div id="sample5">
+    <h1>把一个对象的所有属性作为prop进行传递</h1>
+    <p>使用不带任何参数的v-bind(即用v-bind而不是v-bind:prop-name)。例如下：</p>
+    <p>&lt;sample-5-child v-bind="parentMsg"&gt;&lt;/sample-5-child&gt;</p>
+    <input v-model="parentMsg.first"><br>
+    <input v-model="parentMsg.second"><br>
+    <sample-5-child v-bind="parentMsg"></sample-5-child>
+</div>
+<hr>
+<div id="sample6">
+    <h1>单向数据流</h1>
+    <p>Prop是单向绑定的：当父组件的属性变化时，将传导给子组件，但是反过来不会。</p>
+    <p>在两种情况下，我们很容易忍不住想去修改 prop 中数据：</p>
+    <ol>
+        <li>Prop 作为初始值传入后，子组件想把它当作局部数据来用；</li>
+        <li>Prop 作为原始数据传入，由子组件处理成其它数据输出。</li>
+    </ol>
+    <p>对这两种情况，正确的应对方式是：</p>
+    <ol>
+        <li>定义一个局部变量，并用 prop 的值初始化它：</li>
+        <li>定义一个计算属性，处理 prop 的值并返回：</li>
+    </ol>
+    <sample-6-child v-bind:parent-msg="parentMsg"></sample-6-child>
+    <p>注意在 JavaScript 中对象和数组是引用类型，指向同一个内存空间，如果 prop 是一个对象或数组，在子组件内部改变它会影响父组件的状态。</p>
+</div>
+<hr>
+<div id="sample7">
+    <h1>Prop验证</h1>
+    <p>为组件的prop指定验证规则。如果传入的数据不符合要求，Vue会发出警告。这对于开发给他人使用的组件非常有用。</p>
+    <p>要指定验证规则，需要用对象的形式来定义prop，而不能用字符串数组.</p>
+    <sample-7-child v-bind:prop-a="999" prop-b="999" prop-c="999" v-bind:prop-f="22"></sample-7-child>
+    <p>注：要传递Number数值，要用v-bind:prop-a="999"（传递了数值999而不是字符串）</p>
+</div>
+
+</body>
+
+<script>
+    // 全局注册
+    Vue.component('sample-1', {
+        template: '<div>A custom component sample-1!</div>'
+    });
+    var sample1 = new Vue({
+        el: "#sample1"
+    });
+
+    // 局部注册
+    var sample2 = new Vue({
+        el: "#sample2",
+        data: {},
+        components: {
+            // <my-component> 将只在#sample2中可用
+            'sample-2': {
+                template: '<div>A custom component sample-2!</div>'
+            }
+        }
+    });
+
+    // data必须是函数
+    var sample3 = new Vue({
+        el: "#sample3",
+        data: {counter: 0},
+        components: {
+            'sample-3': {
+                template: '<button v-on:click="counter++">{{ counter }}</button>',
+                data: function () {
+                    return this.$parent.$data; // 每个component共享同一个data对象
+//                    return { counter: 0 } // 每个component独立一个data对象
+                }
+            }
+        }
+    });
+
+    // 子组件点击事件、从父组件访问子组件的数据
+    Vue.component('sample-4-child', {
+        // 声明 props
+        props: ['myMessage'],
+        // 就像 data 一样，prop也可以直接在模板中使用
+        // 同样也可以在vue实例中通过this.myMessage来使用
+        template: '<div><span>{{ myMessage }}</span><button v-on:click="pop">pop from child</button></div>',
+        // 子组件内部点击事件
+        methods: {
+            pop: function () {
+                alert(this.myMessage);
+            }
+        }
+    });
+    var sample4 = new Vue({
+        el: "#sample4",
+        data: {},
+        methods: {
+            pop: function () {
+                alert(this.$children[0].myMessage); // 从父组件访问子组件的数据
+            }
+        }
+    });
+
+    // 把一个对象的所有属性作为prop进行传递
+    Vue.component('sample-5-child', {
+        // 声明 props
+        props: ['first', 'second'],
+        template: '<span>{{ first }} ++++++ {{ second }}</span>' // template里面必须只有一个根节点
+    });
+    var sample5 = new Vue({
+        el: '#sample5',
+        data: {
+            parentMsg: {
+                first: '111111',
+                second: '222222'
+            }
+        }
+    });
+
+    // 单向数据流
+    Vue.component('sample-6-child', {
+        // 声明 props
+        props: ['parentMsg'],
+        data: function () {
+            return {childMessage: this.parentMsg} // 定义一个局部变量，并用 prop 的值初始化它
+        },
+        computed: {
+            computedMessage: function () { // 定义一个计算属性，处理 prop 的值并返回
+                return this.parentMsg.trim().toUpperCase()
+            }
+        },
+        template: '<div>childMessage:<span>{{ childMessage }}</span><br>computedMessage:<span>{{ computedMessage }}</span></div>'
+    });
+    var sample6 = new Vue({
+        el: '#sample6',
+        data: {
+            parentMsg: 'A custom component sample-6!'
+        }
+    });
+
+    // Prop验证
+    Vue.component('sample-7-child', {
+        props: {
+            // 基础类型检测 (`null` 指允许任何类型)
+            propA: Number,
+            // 可能是多种类型
+            propB: [String, Number],
+            // 必传且是字符串
+            propC: {
+                type: String,
+                required: true
+            },
+            // 数值且有默认值
+            propD: {
+                type: Number,
+                default: 100
+            },
+            // 数组/对象的默认值应当由一个工厂函数返回
+            propE: {
+                type: Object,
+                default: function () {
+                    return {message: 'hello'}
+                }
+            },
+            // 自定义验证函数
+            propF: {
+                type: Number,
+                validator: function (value) {
+                    return value > 10
+                }
+            }
+        },
+        template: "<div><ul><li>propA:{{propA}}</li><li>propB:{{propB}}</li><li>propC:{{propC}}</li><li>propD:{{propD}}</li><li>propE:{{propE}}</li><li>propF:{{propF}}</li></ul></div>"
+    });
+    var sample7 = new Vue({
+        el: "#sample7"
+    })
+</script>
+</html>
