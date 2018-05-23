@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <script src="vue.js"></script>
+    <title>My Vue</title>
+</head>
+<body>
+<div id="sample1">
+    <h1>禁用特性继承:不希望组件的根元素继承特性</h1>
+    <p>有了inheritAttrs:false和$attrs，你就可以手动决定这些特性会被赋予哪个元素。</p>
+    <p>case 1. 父组件传了label和value属性；子组件只允许传label和value属性：</p>
+    <base-input-1
+            v-model="username"
+            label="username"
+            class="username-input"
+            placeholder="Enter your username"
+    ></base-input-1>
+    <p>case 2. 父组件传了label和value属性；子组件只允许传value属性：(则label属性不生效；开发版Vue会发出警告)</p>
+    <base-input-2
+            v-model="username"
+            label="username"
+            class="username-input"
+            placeholder="Enter your username"
+    ></base-input-2>
+    <p>case 3. 父组件传了label和value属性；子组件没有限制：(则label和value属性都可生效)</p>
+    <base-input-3
+            v-model="username"
+            label="username"
+            class="username-input"
+            placeholder="Enter your username"
+    ></base-input-3>
+</div>
+<hr>
+
+</body>
+
+<script>
+    // 禁用特性继承:不希望组件的根元素继承特性
+    Vue.component('base-input-1', {
+        inheritAttrs: false,
+        props: ['label', 'value'],
+        template: `
+    <label>
+      {{ label }}
+      <input
+        v-bind="$attrs"
+        v-bind:value="value"
+        v-on:input="$emit('input', $event.target.value)"
+      >
+    </label>
+  `
+    });
+    Vue.component('base-input-2', {
+        inheritAttrs: false,
+        props: ['value'],
+        template: `
+    <label>
+      {{ label }}
+      <input
+        v-bind="$attrs"
+        v-bind:value="value"
+        v-on:input="$emit('input', $event.target.value)"
+      >
+    </label>
+  `
+    });
+    Vue.component('base-input-3', {
+        props: ['label', 'value'],
+        template: `
+    <label>
+      {{ label }}
+      <input
+        v-bind="$attrs"
+        v-bind:value="value"
+        v-on:input="$emit('input', $event.target.value)"
+      >
+    </label>
+  `
+    });
+    var sample1 = new Vue({
+        el: "#sample1",
+        data() {
+            return {
+                username: 'reyona'
+            }
+        }
+    });
+</script>
+</html>
