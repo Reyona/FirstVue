@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <script src="vue.js"></script>
+    <title>My Vue</title>
+</head>
+<body>
+<div id="sample1">
+    <h1>自定义组件的v-model</h1>
+    <p>一个组件上的v-model 默认会利用名为value的prop和名为input的事件，但是像单选框、复选框等类型的输入控件可能会将value特性用于不同的目的。
+        model选项可以用来避免这样的冲突</p>
+    <p>注意：你仍然需要在组件的props选项里声明checked这个prop。</p>
+    <p>如下例子将父组件上的v-model属性转换为&lt;input&gt;子组件的checked属性；并把其input事件转换为了changeee事件。</p>
+    <p>当触发了&lt;input&gt;子组件的checked事件时，将会向外抛出changeee事件，父组件需要监听changeee事件。</p>
+    <sample-1 v-model="lovingVue" v-on:changeee="lovingVueChanged"></sample-1>
+</div>
+<hr>
+
+</body>
+
+<script>
+    // 自定义组件的v-model
+    Vue.component('sample-1', {
+        model: {
+            prop: 'checked',
+            event: 'changeee'
+        },
+        props: {
+            checked: Boolean
+        },
+        template: `
+    <label>
+        lovingVue:
+        <input
+        type="checkbox"
+        v-bind:checked="checked"
+        v-on:change="$emit('changeee', $event.target.checked)"
+        >
+    </label>
+
+  `
+    });
+    var sample1 = new Vue({
+        el: "#sample1",
+        data() {
+            return {
+                lovingVue: true
+            }
+        },
+        methods: {
+            lovingVueChanged(v) {
+                alert(v)
+            }
+        }
+    });
+</script>
+</html>
