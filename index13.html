@@ -16,6 +16,25 @@
     <sample-1 v-model="lovingVue" v-on:changeee="lovingVueChanged"></sample-1>
 </div>
 <hr>
+<div id="sample2">
+    <h1>将原生事件绑定到组件</h1>
+    <p>Vue提供了一个$listeners属性，它是一个对象，里面包含了作用在这个组件上的所有监听器。</p>
+    <p>有了这个$listeners属性，你就可以配合v-on="$listeners"将所有的事件监听器指向这个组件的某个特定的子元素。
+        对于类似&lt;input&gt;的你希望它也可以配合v-model工作的组件来说，为这些监听器创建一个类似下述inputListeners的计算属性通常是非常有用的</p>
+    <sample-2 v-model="lovingVue" v-on:input="lovingVueInput"></sample-2>
+</div>
+<hr>
+<div id="sample3">
+    <h1>.sync修饰符</h1>
+    <p>在有些情况下，我们可能需要对一个prop进行“双向绑定”。</p>
+    <p>如下例子，把valueee的值传给子组件，并通过子组件改变该值并同步回父组件显示出来。</p>
+    <p>使用.sync修饰符的简写方式，需要以update:valueee的模式触发事件。</p>
+    <p>&lt;sample-3 v-bind:valueee.sync="valueee"&gt;&lt;/sample-3&gt;</p>
+    <p>当我们用一个对象同时设置多个prop的时候，也可以简写为：</p>
+    <p>&lt;sample-3 v-bind.sync="valueee"&gt;&lt;/sample-3&gt;</p>
+    <sample-3 v-bind:valueee.sync="valueee"></sample-3>
+    valueee.a : {{valueee.a}} valueee.b : {{valueee.b}}
+</div>
 
 </body>
 
@@ -51,6 +70,71 @@
         methods: {
             lovingVueChanged(v) {
                 alert(v)
+            }
+        }
+    });
+
+    // 将原生事件绑定到组件
+    Vue.component('sample-2', {
+        inheritAttrs: false,
+        props: ['label', 'value'],
+        computed: {
+            inputListeners: function () {
+                var vm = this
+                // Object.assign将所有的对象合并为一个新对象
+                return Object.assign({},
+                    this.$listeners, // 我们从父级添加所有的监听器
+                    {// 然后我们添加自定义监听器，或覆写一些监听器的行为
+                        input: function (event) {
+                            vm.$emit('input', event.target.value)
+                            // 事件触发默认返回的是事件对象本身，
+                            // 对于input事件，不改成返回event.target.value的话，会配合v-bind:value="value"把事件对象赋值到input中去
+                        }
+                    }
+                )
+            }
+        },
+        template: `
+    <label>
+      {{ label }}
+      <input
+        v-bind="$attrs"
+        v-bind:value="value"
+        v-on="inputListeners"
+      >
+    </label>
+  `
+    });
+    var sample2 = new Vue({
+        el: "#sample2",
+        data() {
+            return {
+                lovingVue: 1234
+            }
+        },
+        methods: {
+            lovingVueInput(v) {
+                alert(v)
+            }
+        }
+    });
+
+    // .sync修饰符
+    Vue.component('sample-3', {
+        inheritAttrs: false,
+        props: ['valueee'],
+        template: `
+    <button v-on:click="valueee.a++;valueee.b++;$emit('update:valueee', valueee)">click!</button>
+  `
+    });
+    var sample3 = new Vue({
+        el: "#sample3",
+        data() {
+            return {
+                valueee: {
+                    a:1,
+                    b:2
+                }
             }
         }
     });
