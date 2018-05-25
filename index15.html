@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="vue.js"></script>
+    <title>My Vue</title>
+</head>
+<body>
+
+<div id="sample">
+    <h1>插槽</h1>
+    <p>允许调用组件时传入slot，当组件渲染的时候，组件模板中的&lt;slot&gt;元素将会被替换为传入的内容</p>
+    <my-component>
+        <template slot="header">
+            <h1>This is header.</h1>
+        </template>
+        <p>A paragraph for the main content.</p>
+        <p>And another one.</p>
+
+        <template slot="footer">
+            <p>This is footer.</p>
+        </template>
+    </my-component>
+</div>
+
+</body>
+
+<script>
+    Vue.component('my-component', {
+        template: `
+<div class="container">
+  <header style="border: 1px solid;">
+    <slot name="header"></slot>
+    <p>// 在向具名插槽提供内容的时候，我们可以在一个父组件的&lt;template&gt;元素上使用slot特性</p>
+  </header>
+  <main style="border: 1px solid;">
+    <slot>default content.</slot>
+    <p>// 我们还是可以保留一个未命名插槽，这个插槽是默认插槽，也就是说它会作为所有未匹配到插槽的内容的统一出口</p>
+    <p>// 如果父组件为这个插槽提供了内容，则默认的内容会被替换掉</p>
+  </main>
+  <footer style="border: 1px solid;">
+    <slot name="footer"></slot>
+  </footer>
+</div>
+  `
+    });
+    var sample = new Vue({
+        el: "#sample"
+    });
+</script>
+</html>
